@@ -1,3 +1,10 @@
+import uuid
+from datetime import datetime
+
+
+habits = []
+
+
 def load_habits():
     pass
 
@@ -7,7 +14,29 @@ def show_habits():
 
 
 def add_habit():
-    pass
+    habit_name = input("Enter habit name: ").strip().capitalize()
+    habit_category = input("Enter habit category: ").strip().capitalize()
+
+    frequency_map = {'1': 'Daily', '2': 'Weekly', '3': 'Monthly'}
+    while True:
+        frequency_option = input(
+            "Choose habit frequency 1)Daily 2)Weekly 3)Monthly: ").strip()
+        if frequency_option in frequency_map:
+            habit_frequency = frequency_map[frequency_option]
+            break
+        print("Invalid frequency.")
+
+    new_habit = {
+        'id': str(uuid.uuid4()),
+        'name': habit_name,
+        'category': habit_category,
+        'frequency': habit_frequency,
+        'created_at': datetime.now().date().isoformat()
+    }
+
+    habits.append(new_habit)
+    print("\nHabit successfully added.")
+    print(habits)
 
 
 def delete_habit():
