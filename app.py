@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from pathlib import Path
 from rich.table import Table
@@ -39,7 +39,6 @@ def show_habits():
     table.add_column("ID", no_wrap=True)
     table.add_column("Name")
     table.add_column("Category")
-    table.add_column("Frequency")
     table.add_column("Status")
     table.add_column("Created At")
 
@@ -50,7 +49,6 @@ def show_habits():
             h['id'],
             h['name'],
             h['category'],
-            h['frequency'],
             "Done" if datetime.now().date().isoformat(
             ) in h['completions'] else "Undone",
             h['created_at'],
@@ -64,20 +62,10 @@ def add_habit():
     habit_name = input("Enter habit name: ").strip().capitalize()
     habit_category = input("Enter habit category: ").strip().capitalize()
 
-    frequency_map = {'1': 'Daily', '2': 'Weekly', '3': 'Monthly'}
-    while True:
-        frequency_option = input(
-            "Choose habit frequency 1)Daily 2)Weekly 3)Monthly: ").strip()
-        if frequency_option in frequency_map:
-            habit_frequency = frequency_map[frequency_option]
-            break
-        console.print("[bold red]Invalid frequency.[/bold red]")
-
     new_habit = {
         'id': str(uuid.uuid4())[:6],
         'name': habit_name,
         'category': habit_category,
-        'frequency': habit_frequency,
         'created_at': datetime.now().date().isoformat(),
         'completions': []
     }
@@ -126,7 +114,22 @@ def mark_habit():
 
 
 def view_streaks():
-    pass
+    if not habits:
+        console.print("\n[bold red]No habits found.[/bold red]")
+        return
+
+    today = datetime.now().date()
+    for h in habits:
+        streak = 0
+        dates = sorted([datetime.fromisoformat(date).date()
+                       for date in h['completions']])
+
+        for d in reversed(dates):
+            if d == today - timedelta(days=streak):
+                streak += 1
+            else:
+                break
+        console.print(f"{h['name']} ({h['frequency']}): {streak} streak")
 
 
 def save_habits():
