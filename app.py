@@ -1,4 +1,3 @@
-from rich.console import Console
 import uuid
 from datetime import datetime
 import json
@@ -13,13 +12,20 @@ console = Console()
 
 
 def load_habits():
-    pass
+    habits.clear()
+
+    if HABITS_FILE.exists():
+        try:
+            with open(HABITS_FILE, 'r') as hf:
+                habits.extend(json.load(hf))
+        except json.JSONDecodeError:
+            console.print(
+                "[bold yellow]Warning: JSON file is corrupted. Starting with empty habits.[/bold yellow]")
+    else:
+        HABITS_FILE.touch()
 
 
-def show_habits():
-    if not habits:
-        console.print("\n[bold red]You have no habits.[/bold red]")
-        return
+load_habits()
 
 
 def show_habits():
@@ -27,7 +33,8 @@ def show_habits():
         console.print("\n[bold red]No habits found.[/bold red]")
         return
 
-    table = Table(title="\n[bold white]Habit Tracker[/bold white]")
+    table = Table(
+        title="\n[bold white]Habit Tracker[/bold white]", show_lines=True)
 
     table.add_column("ID", no_wrap=True)
     table.add_column("Name")
