@@ -46,7 +46,7 @@ def show_habits():
     for i, h in enumerate(habits):
         row_color = colors[i % len(colors)]
         table.add_row(
-            h['id'][:6],
+            h['id'],
             h['name'],
             h['category'],
             h['frequency'],
@@ -71,7 +71,7 @@ def add_habit():
         console.print("[bold red]Invalid frequency.[/bold red]")
 
     new_habit = {
-        'id': str(uuid.uuid4()),
+        'id': str(uuid.uuid4())[:6],
         'name': habit_name,
         'category': habit_category,
         'frequency': habit_frequency,
@@ -83,7 +83,20 @@ def add_habit():
 
 
 def delete_habit():
-    pass
+    if not habits:
+        console.print("\n[bold red]No habits to delete.[/bold red]")
+        return
+
+    show_habits()
+
+    habit_id = input("Enter habit id to delete: ").strip().lower()
+    for i, h in enumerate(habits):
+        if h['id'] == habit_id:
+            del habits[i]
+            console.print(
+                "\n[bold green]Habit successfully deleted.[/bold green]")
+            return
+    console.print("\n[bold red]Habit doesn't exist.[/bold red]")
 
 
 def mark_habit():
