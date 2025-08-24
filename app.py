@@ -1,7 +1,10 @@
 import uuid
 from datetime import datetime
+import json
+from pathlib import Path
 
 
+HABITS_FILE = Path("habits.json")
 habits = []
 
 
@@ -52,7 +55,8 @@ def view_streaks():
 
 
 def save_habits():
-    pass
+    with open(HABITS_FILE, 'w') as hf:
+        json.dump(habits, hf, indent=4)
 
 
 def menu():
