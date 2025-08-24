@@ -1,11 +1,15 @@
+from rich.console import Console
 import uuid
 from datetime import datetime
 import json
 from pathlib import Path
+from rich.table import Table
+from rich.console import Console
 
 
 HABITS_FILE = Path("habits.json")
 habits = []
+console = Console()
 
 
 def load_habits():
@@ -13,7 +17,37 @@ def load_habits():
 
 
 def show_habits():
-    pass
+    if not habits:
+        console.print("\n[bold red]You have no habits.[/bold red]")
+        return
+
+
+def show_habits():
+    if not habits:
+        console.print("\n[bold red]No habits found.[/bold red]")
+        return
+
+    table = Table(title="\n[bold white]Habit Tracker[/bold white]")
+
+    table.add_column("ID", no_wrap=True)
+    table.add_column("Name")
+    table.add_column("Category")
+    table.add_column("Frequency")
+    table.add_column("Created At")
+
+    colors = ["cyan", "magenta", "yellow", "green", "blue", "red", "white"]
+    for i, h in enumerate(habits):
+        row_color = colors[i % len(colors)]
+        table.add_row(
+            h['id'][:6],
+            h['name'],
+            h['category'],
+            h['frequency'],
+            h['created_at'],
+            style=row_color
+        )
+
+    console.print(table)
 
 
 def add_habit():
@@ -27,7 +61,7 @@ def add_habit():
         if frequency_option in frequency_map:
             habit_frequency = frequency_map[frequency_option]
             break
-        print("Invalid frequency.")
+        console.print("[bold red]Invalid frequency.[/bold red]")
 
     new_habit = {
         'id': str(uuid.uuid4()),
@@ -38,8 +72,7 @@ def add_habit():
     }
 
     habits.append(new_habit)
-    print("\nHabit successfully added.")
-    print(habits)
+    console.print("\n[bold green]Habit successfully added.[/bold green]")
 
 
 def delete_habit():
@@ -84,7 +117,7 @@ def menu():
             save_habits()
             break
         else:
-            print("\nEnter a valid number.")
+            console.print("\n[bold red]Enter a valid number.[/bold red]")
 
 
 menu()
