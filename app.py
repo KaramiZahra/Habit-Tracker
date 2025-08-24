@@ -40,6 +40,7 @@ def show_habits():
     table.add_column("Name")
     table.add_column("Category")
     table.add_column("Frequency")
+    table.add_column("Status")
     table.add_column("Created At")
 
     colors = ["cyan", "magenta", "yellow", "green", "blue", "red", "white"]
@@ -50,6 +51,8 @@ def show_habits():
             h['name'],
             h['category'],
             h['frequency'],
+            "Done" if datetime.now().date().isoformat(
+            ) in h['completions'] else "Undone",
             h['created_at'],
             style=row_color
         )
@@ -75,7 +78,8 @@ def add_habit():
         'name': habit_name,
         'category': habit_category,
         'frequency': habit_frequency,
-        'created_at': datetime.now().date().isoformat()
+        'created_at': datetime.now().date().isoformat(),
+        'completions': []
     }
 
     habits.append(new_habit)
@@ -89,7 +93,7 @@ def delete_habit():
 
     show_habits()
 
-    habit_id = input("Enter habit id to delete: ").strip().lower()
+    habit_id = input("Enter habit ID to delete: ").strip().lower()
     for i, h in enumerate(habits):
         if h['id'] == habit_id:
             del habits[i]
@@ -100,7 +104,25 @@ def delete_habit():
 
 
 def mark_habit():
-    pass
+    if not habits:
+        console.print("\n[bold red]No habits to mark.[/bold red]")
+        return
+
+    show_habits()
+
+    habit_id = input("Enter habit ID to mark as done today: ").strip().lower()
+    for h in habits:
+        if h['id'] == habit_id:
+            today = datetime.now().date().isoformat()
+
+            if today in h['completions']:
+                console.print(
+                    f"\n[bold yellow]{h['name']} is already marked as done today.[/bold yellow]")
+            else:
+                h['completions'].append(today)
+                console.print(
+                    f"\n[bold green]{h['name']} marked as done for today.[/bold green]")
+            return
 
 
 def view_streaks():
